@@ -9,6 +9,9 @@
 
 import Foundation
 import Moya
+import os
+
+private let networkLog = Logger(subsystem: "lv.zzdats.NetworkWrapperPackage", category: "api")
 
 open class ApiProvider {
         
@@ -61,8 +64,8 @@ public class RefreshbleMoyaProvider<T: TargetType>: MoyaProvider<T> {
                 }
                 completion(result)
             case let .failure(error):
-                let response : Response? = error.response
-                let statusCode : Int? = response?.statusCode
+                let response: Response? = error.response
+                let statusCode: Int? = response?.statusCode
                 
                 if statusCode == 401 || statusCode == 403 {
                     self.delegate?.unauthorizedError()
@@ -75,7 +78,8 @@ public class RefreshbleMoyaProvider<T: TargetType>: MoyaProvider<T> {
                         self.delegate?.unrecognizedError(code: String(statusCode ?? 404))
                     }
                 }
-                print(error)
+                
+                networkLog.error("Request failed: \(error.localizedDescription, privacy: .private)")
             }
         })
     }
